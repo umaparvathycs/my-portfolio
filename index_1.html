@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Umaparvathy C S — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Syne:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white:     #ffffff;
+      --snow:      #f7f9fc;
+      --mist:      #eaf1f8;
+      --blue-pale: #d0e4f5;
+      --blue-mid:  #4a90c4;
+      --blue-deep: #1a5a8a;
+      --navy:      #0d2e4a;
+      --ink:       #0a1e2e;
+      --muted:     #5a7a94;
+      --border:    rgba(74,144,196,0.15);
+      --teal:      #2ab8a0;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--white);
+      color: var(--ink);
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    .cur { position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); border-radius: 50%; }
+    #cur-dot  { width: 8px; height: 8px; background: var(--blue-mid); transition: transform .15s; }
+    #cur-ring { width: 38px; height: 38px; border: 1.5px solid var(--blue-mid); opacity: .5; transition: width .35s, height .35s; }
+    body.hovering #cur-ring { width: 54px; height: 54px; opacity: .3; }
+
+    /* WAVE BG */
+    #wave-canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; opacity:.3; }
+
+    /* NAV */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:500;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.3rem 5rem;
+      background: rgba(247,249,252,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 500;
+      color: var(--navy); text-decoration: none; letter-spacing: .04em;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: .65rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color .2s; position: relative;
+    }
+    .nav-links a::after {
+      content:''; position:absolute; bottom:-4px; left:0;
+      width:0; height:1.5px; background:var(--blue-mid); transition:width .3s;
+    }
+    .nav-links a:hover { color: var(--blue-deep); }
+    .nav-links a:hover::after { width:100%; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; position: relative; z-index:1;
+      display: flex; align-items: center;
+      padding: 0 5rem; overflow: hidden;
+    }
+    .hbc { position:absolute; border-radius:50%; background:radial-gradient(circle,var(--blue-pale) 0%,transparent 70%); pointer-events:none; }
+    .hbc1 { width:700px; height:700px; top:-200px; right:-150px; opacity:.5; }
+    .hbc2 { width:380px; height:380px; bottom:-80px; left:-80px; opacity:.35; animation:floatY 8s ease-in-out infinite; }
+    .hbc3 { width:220px; height:220px; top:32%; right:22%; opacity:.22; animation:floatY 6s 2s ease-in-out infinite; }
+    @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+
+    .hero-content { position:relative; z-index:2; max-width:660px; }
+    .hero-loc {
+      font-family:'DM Mono', monospace;
+      font-size:.65rem; letter-spacing:.22em; text-transform:uppercase;
+      color:var(--blue-mid); margin-bottom:1.4rem;
+      opacity:0; animation:riseIn .8s .2s forwards;
+      display:flex; align-items:center; gap:.5rem;
+    }
+    .hero-loc::before { content:'📍'; font-size:.85rem; }
+    .hero-name {
+      font-family:'Playfair Display', serif;
+      font-size:clamp(2.8rem,6vw,6.5rem);
+      font-weight:400; line-height:1.0; letter-spacing:-.02em;
+      color:var(--navy);
+      opacity:0; animation:riseIn .9s .4s forwards;
+    }
+    .hero-name em { font-style:italic; color:var(--blue-mid); display:block; }
+    .hero-tagline {
+      margin-top:1.8rem; font-size:1rem; color:var(--muted);
+      max-width:480px; line-height:1.9;
+      opacity:0; animation:riseIn .9s .65s forwards;
+    }
+    .hero-skills {
+      margin-top:1.8rem; display:flex; flex-wrap:wrap; gap:.5rem;
+      opacity:0; animation:riseIn .9s .8s forwards;
+    }
+    .skill-tag {
+      padding:.3rem .9rem;
+      background:var(--mist); color:var(--blue-deep);
+      border:1px solid var(--border);
+      font-family:'DM Mono', monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase;
+      border-radius:100px; transition:background .2s, color .2s;
+    }
+    .skill-tag:hover { background:var(--blue-deep); color:var(--white); }
+    .hero-actions {
+      margin-top:2.5rem; display:flex; gap:1.2rem; align-items:center;
+      opacity:0; animation:riseIn .9s .95s forwards;
+    }
+    .btn-ocean {
+      padding:.85rem 2.2rem;
+      background:var(--blue-deep); color:var(--white);
+      font-family:'DM Mono', monospace;
+      font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+      text-decoration:none; transition:background .25s, transform .2s;
+    }
+    .btn-ocean:hover { background:var(--blue-mid); transform:translateY(-3px); }
+    .btn-ghost {
+      font-family:'DM Mono', monospace; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color .2s;
+    }
+    .btn-ghost:hover { color:var(--blue-deep); }
+
+    .hero-photo {
+      position:absolute; right:5rem; bottom:0; z-index:2;
+      width:min(340px,30vw);
+      opacity:0; animation:riseIn 1.1s .5s forwards;
+    }
+    .hero-photo img {
+      width:100%; display:block;
+      filter:saturate(.85) contrast(1.05);
+      border-top-left-radius:180px; border-top-right-radius:180px;
+      border:4px solid var(--blue-pale);
+    }
+    .hero-glow {
+      position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+      width:120%; height:55%;
+      background:radial-gradient(ellipse,var(--blue-pale) 0%,transparent 70%); z-index:-1;
+    }
+    .hero-scroll {
+      position:absolute; bottom:2.5rem; left:5rem; z-index:2;
+      display:flex; align-items:center; gap:1rem;
+      opacity:0; animation:fadeIn 1s 1.5s forwards;
+    }
+    .scroll-bar { width:40px; height:1px; background:var(--blue-mid); }
+    .scroll-lbl { font-family:'DM Mono', monospace; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+
+    /* SECTIONS */
+    section { position:relative; z-index:1; padding:8rem 5rem; }
+    .sec-label { font-family:'DM Mono', monospace; font-size:.65rem; letter-spacing:.22em; text-transform:uppercase; color:var(--blue-mid); margin-bottom:1rem; }
+    .sec-title { font-family:'Playfair Display', serif; font-size:clamp(2rem,3.8vw,3.2rem); font-weight:400; line-height:1.2; color:var(--navy); margin-bottom:4rem; }
+    .sec-title em { font-style:italic; color:var(--blue-mid); }
+    .reveal { opacity:0; transform:translateY(32px); transition:opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* ABOUT */
+    #about { background:var(--snow); }
+    .about-wrap { display:grid; grid-template-columns:1fr 1.6fr; gap:6rem; align-items:center; }
+    .about-img-wrap { position:relative; }
+    .about-img-wrap img { width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:4px; filter:saturate(.85) contrast(1.05); position:relative; z-index:1; }
+    .img-frame { position:absolute; top:1.2rem; left:1.2rem; right:-1.2rem; bottom:-1.2rem; border:1.5px solid var(--blue-pale); border-radius:4px; z-index:0; }
+    .about-badge { position:absolute; bottom:-1.5rem; right:-1.5rem; z-index:2; background:var(--blue-deep); color:var(--white); padding:1.2rem 1.5rem; text-align:center; }
+    .about-badge .num { font-family:'Playfair Display', serif; font-size:1.8rem; font-weight:400; line-height:1; display:block; }
+    .about-badge .lbl { font-family:'DM Mono', monospace; font-size:.55rem; letter-spacing:.15em; text-transform:uppercase; opacity:.7; margin-top:.2rem; display:block; }
+    .about-text p { color:var(--muted); font-size:1rem; line-height:1.9; margin-bottom:1.4rem; }
+    .about-text p:first-child { font-family:'Playfair Display', serif; font-size:1.3rem; color:var(--navy); line-height:1.65; }
+    .skills-block { margin-top:2rem; }
+    .skills-block h4 { font-family:'DM Mono', monospace; font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:var(--blue-mid); margin-bottom:.9rem; }
+    .pills { display:flex; flex-wrap:wrap; gap:.5rem; }
+    .pill { padding:.35rem .95rem; border:1px solid var(--border); font-family:'DM Mono', monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--blue-deep); background:var(--mist); border-radius:100px; transition:background .2s, color .2s; }
+    .pill:hover { background:var(--blue-deep); color:var(--white); }
+    .pill.learning { border-color:rgba(42,184,160,.3); color:var(--teal); background:rgba(42,184,160,.07); }
+    .pill.learning:hover { background:var(--teal); color:var(--white); }
+
+    /* EDUCATION */
+    #education { background:var(--white); }
+    .edu-timeline { position:relative; padding-left:2rem; }
+    .edu-timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1.5px; background:linear-gradient(to bottom,var(--blue-mid),var(--blue-pale),transparent); }
+    .edu-entry { position:relative; padding-bottom:3.5rem; padding-left:2.5rem; }
+    .edu-entry:last-child { padding-bottom:0; }
+    .edu-dot { position:absolute; left:-6px; top:.45rem; width:12px; height:12px; border-radius:50%; border:2px solid var(--blue-mid); background:var(--white); transition:background .3s; }
+    .edu-entry:hover .edu-dot { background:var(--blue-mid); }
+    .edu-period { font-family:'DM Mono', monospace; font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--blue-mid); margin-bottom:.5rem; }
+    .edu-degree { font-family:'Playfair Display', serif; font-size:1.5rem; font-weight:400; color:var(--navy); margin-bottom:.25rem; }
+    .edu-inst { font-family:'DM Mono', monospace; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--blue-mid); margin-bottom:.6rem; }
+    .edu-detail { color:var(--muted); font-size:.92rem; max-width:580px; line-height:1.8; }
+    .edu-tag { display:inline-block; margin-top:.8rem; padding:.25rem .8rem; background:var(--mist); color:var(--blue-deep); font-family:'DM Mono', monospace; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase; border:1px solid var(--blue-pale); }
+    .edu-tag.current { background:rgba(42,184,160,.1); color:var(--teal); border-color:rgba(42,184,160,.3); }
+    .edu-score { display:inline-block; margin-left:.6rem; padding:.25rem .8rem; background:rgba(74,144,196,.1); color:var(--blue-deep); font-family:'DM Mono', monospace; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase; border:1px solid var(--blue-pale); }
+
+    /* HOBBIES */
+    #hobbies { background:var(--navy); }
+    #hobbies .sec-label { color:var(--blue-pale); }
+    #hobbies .sec-title { color:var(--white); }
+    .hobbies-duo { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .hob {
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      padding:3.5rem 3rem;
+      position:relative; overflow:hidden;
+      transition:background .3s, border-color .3s, transform .3s;
+      cursor:default;
+    }
+    .hob::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--blue-mid),transparent); opacity:0; transition:opacity .4s; }
+    .hob:hover { background:rgba(74,144,196,.12); border-color:var(--blue-mid); transform:translateY(-5px); }
+    .hob:hover::before { opacity:.08; }
+    .hob-num { position:absolute; top:1rem; right:1.5rem; font-family:'Playfair Display', serif; font-size:6rem; font-weight:700; color:rgba(255,255,255,.04); line-height:1; }
+    .hob-icon { font-size:3rem; margin-bottom:1.2rem; display:block; position:relative; z-index:1; }
+    .hob-name { font-family:'Playfair Display', serif; font-size:1.8rem; color:var(--white); margin-bottom:.6rem; position:relative; z-index:1; }
+    .hob-desc { font-size:.9rem; color:rgba(255,255,255,.5); line-height:1.75; position:relative; z-index:1; max-width:380px; }
+
+    /* ACHIEVEMENTS */
+    #achievements { background:var(--snow); }
+    .ach-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
+    .ach-card { background:var(--white); border:1px solid var(--border); padding:2.5rem; position:relative; overflow:hidden; transition:transform .3s, box-shadow .3s, border-color .3s; }
+    .ach-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(to right,var(--blue-mid),var(--blue-deep)); transform:scaleX(0); transform-origin:left; transition:transform .4s ease; }
+    .ach-card:hover { transform:translateY(-5px); box-shadow:0 24px 60px rgba(26,90,138,.08); border-color:var(--blue-pale); }
+    .ach-card:hover::after { transform:scaleX(1); }
+    .ach-icon { font-size:1.8rem; margin-bottom:1rem; }
+    .ach-yr { font-family:'DM Mono', monospace; font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; color:var(--blue-mid); margin-bottom:.5rem; }
+    .ach-name { font-family:'Playfair Display', serif; font-size:1.25rem; font-weight:400; color:var(--navy); margin-bottom:.6rem; line-height:1.3; }
+    .ach-desc { font-size:.88rem; color:var(--muted); line-height:1.75; }
+
+    /* CERTIFICATES */
+    #certificates { background:var(--white); }
+    .cert-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.4rem; }
+    .cert-card { border:1.5px solid var(--border); padding:2.2rem 2rem; position:relative; transition:border-color .3s, transform .3s; background:var(--white); }
+    .cert-card:hover { border-color:var(--blue-mid); transform:translateY(-3px); }
+    .cert-stripe { position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right,var(--blue-mid),var(--blue-deep)); }
+    .cert-logo { width:38px; height:38px; border-radius:8px; background:var(--mist); display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-bottom:1.2rem; }
+    .cert-issuer { font-family:'DM Mono', monospace; font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:var(--blue-mid); margin-bottom:.5rem; }
+    .cert-name { font-family:'Playfair Display', serif; font-size:1.1rem; font-weight:400; color:var(--navy); margin-bottom:.4rem; line-height:1.4; }
+    .cert-src { font-family:'DM Mono', monospace; font-size:.62rem; color:var(--muted); letter-spacing:.06em; }
+    .cert-id { margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); font-family:'DM Mono', monospace; font-size:.58rem; color:rgba(10,30,46,.2); letter-spacing:.06em; }
+
+    /* CONTACT */
+    #contact { background:linear-gradient(135deg,var(--navy) 0%,var(--blue-deep) 100%); color:var(--white); text-align:center; }
+    #contact .sec-label { color:var(--blue-pale); }
+    #contact .sec-title { color:var(--white); max-width:560px; margin:0 auto 1.2rem; }
+    .contact-sub { color:rgba(255,255,255,.55); max-width:420px; margin:0 auto 3.5rem; line-height:1.85; }
+    .contact-email { font-family:'Playfair Display', serif; font-size:clamp(1.3rem,2.5vw,2.2rem); font-style:italic; color:var(--white); text-decoration:none; border-bottom:1px solid rgba(255,255,255,.25); padding-bottom:.2rem; transition:color .3s, border-color .3s; }
+    .contact-email:hover { color:var(--blue-pale); border-color:var(--blue-pale); }
+    .socials { display:flex; justify-content:center; gap:2rem; margin-top:3.5rem; }
+    .soc { font-family:'DM Mono', monospace; font-size:.65rem; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.4); text-decoration:none; transition:color .25s; }
+    .soc:hover { color:var(--blue-pale); }
+
+    /* FOOTER */
+    footer { background:var(--ink); padding:2rem 5rem; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,.06); }
+    footer p { font-family:'DM Mono', monospace; font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+    @keyframes riseIn { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    @media (max-width:960px){
+      nav{padding:1.2rem 2rem} .nav-links{gap:1.2rem}
+      #hero{padding:2rem;flex-direction:column;justify-content:center;padding-top:8rem;padding-bottom:4rem}
+      .hero-photo{position:relative;right:auto;width:100%;max-width:280px;margin:3rem auto 0}
+      section{padding:5rem 2rem}
+      .about-wrap{grid-template-columns:1fr;gap:3rem}
+      .hobbies-duo,.ach-grid,.cert-grid{grid-template-columns:1fr}
+      footer{flex-direction:column;gap:.8rem;text-align:center}
+    }
+    @media (max-width:580px){
+      .nav-links{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cur" id="cur-dot"></div>
+<div class="cur" id="cur-ring"></div>
+<canvas id="wave-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">Umaparvathy C S</a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#education">Education</a>
+    <a href="#hobbies">Hobbies</a>
+    <a href="#achievements">Achievements</a>
+    <a href="#certificates">Certificates</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hbc hbc1"></div>
+  <div class="hbc hbc2"></div>
+  <div class="hbc hbc3"></div>
+  <div class="hero-content">
+    <p class="hero-loc">Thiruvananthapuram, Kerala, India</p>
+    <h1 class="hero-name">Uma<em>parvathy C S</em></h1>
+    <p class="hero-tagline">Data Analytics student, statistician-at-heart, and frontend developer — turning numbers into insight and code into experience.</p>
+    <div class="hero-skills">
+      <span class="skill-tag">R Programming</span>
+      <span class="skill-tag">SPSS</span>
+      <span class="skill-tag">Statistics</span>
+      <span class="skill-tag">Frontend Dev</span>
+      <span class="skill-tag">Python ✦ Learning</span>
+      <span class="skill-tag">Machine Learning ✦ Exploring</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#about" class="btn-ocean">My Story</a>
+      <a href="#certificates" class="btn-ghost">View Certificates →</a>
+    </div>
+  </div>
+  <div class="hero-photo">
+    <div class="hero-glow"></div>
+    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&auto=format&fit=crop&q=80" alt="Umaparvathy C S" />
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-bar"></div>
+    <span class="scroll-lbl">Scroll to explore</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal">
+    <p class="sec-label">01 — About Me</p>
+    <h2 class="sec-title">Hello, I'm <em>Uma</em></h2>
+  </div>
+  <div class="about-wrap">
+    <div class="about-img-wrap reveal">
+      <div class="img-frame"></div>
+      <div class="about-badge">
+        <span class="num">90%</span>
+        <span class="lbl">HSC Score</span>
+      </div>
+      <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&auto=format&fit=crop&q=80" alt="Umaparvathy C S portrait" />
+    </div>
+    <div class="about-text reveal">
+      <p>I'm Umaparvathy C S — a passionate data analytics student from Thiruvananthapuram, Kerala, on a mission to make sense of the world through data, statistics, and technology.</p>
+      <p>My journey began with a strong foundation in Biology Science, evolved through a deep love for Statistics, and has now brought me to the cutting edge of Data Analytics and Computational Science at IIITM-K (Kerala University of Digital Sciences). I believe data tells the most honest stories — and I want to be someone who can read and share them.</p>
+      <p>I'm currently sharpening my Python skills and diving into the fascinating world of Machine Learning, while also building clean, interactive web experiences as a frontend developer.</p>
+      <div class="skills-block">
+        <h4>Technical Skills</h4>
+        <div class="pills">
+          <span class="pill">R Programming</span>
+          <span class="pill">SPSS</span>
+          <span class="pill">Statistics</span>
+          <span class="pill">HTML / CSS / JS</span>
+          <span class="pill">Frontend Dev</span>
+          <span class="pill learning">Python ↗ Learning</span>
+          <span class="pill learning">Machine Learning ↗ Exploring</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="reveal">
+    <p class="sec-label">02 — Education</p>
+    <h2 class="sec-title">My academic <em>journey</em></h2>
+  </div>
+  <div class="edu-timeline">
+
+    <div class="edu-entry reveal">
+      <div class="edu-dot"></div>
+      <div class="edu-period">2025 – 2027</div>
+      <div class="edu-degree">M.Sc. Data Analytics &amp; Computational Science</div>
+      <div class="edu-inst">Kerala University of Digital Sciences, Innovation &amp; Technology (formerly IIITM-K)</div>
+      <div class="edu-detail">Pursuing an advanced programme at one of Kerala's most forward-thinking tech institutions. Studying computational methods, advanced analytics, machine learning, and the science of large-scale data systems. Actively exploring Python for data science and the foundations of AI.</div>
+      <span class="edu-tag current">Currently Pursuing</span>
+    </div>
+
+    <div class="edu-entry reveal">
+      <div class="edu-dot"></div>
+      <div class="edu-period">2022 – 2025</div>
+      <div class="edu-degree">B.Sc. Statistics</div>
+      <div class="edu-inst">Government College Kariavattom — University of Kerala</div>
+      <div class="edu-detail">Studied probability theory, statistical inference, regression analysis, design of experiments, and data analysis tools including R and SPSS. Built a strong quantitative foundation that now underpins my work in data analytics and computational science.</div>
+      <span class="edu-tag">Completed</span>
+    </div>
+
+    <div class="edu-entry reveal">
+      <div class="edu-dot"></div>
+      <div class="edu-period">2020 – 2022</div>
+      <div class="edu-degree">Higher Secondary — Biology Science</div>
+      <div class="edu-inst">Government Model Boys Higher Secondary School, Attingal</div>
+      <div class="edu-detail">Studied Biology Science stream with distinction, achieving an outstanding 90% score in the Higher Secondary Certificate examination. Developed a strong analytical mindset and scientific rigour that continues to shape my approach to problem-solving.</div>
+      <span class="edu-tag">Completed</span>
+      <span class="edu-score">90% ✦ HSC</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOBBIES -->
+<section id="hobbies">
+  <div class="reveal">
+    <p class="sec-label">03 — Hobbies &amp; Interests</p>
+    <h2 class="sec-title">Beyond the <em>data</em></h2>
+  </div>
+  <div class="hobbies-duo reveal">
+    <div class="hob">
+      <span class="hob-num">01</span>
+      <span class="hob-icon">🎻</span>
+      <div class="hob-name">Violin</div>
+      <div class="hob-desc">There is a beautiful parallel between music and mathematics — both are languages of pattern and precision. Playing the violin is my way of finding harmony in structure, letting emotion flow through something deeply disciplined and refined.</div>
+    </div>
+    <div class="hob">
+      <span class="hob-num">02</span>
+      <span class="hob-icon">🎬</span>
+      <div class="hob-name">Movies</div>
+      <div class="hob-desc">Films are the ultimate data — stories, characters, emotions, and worlds compressed into two hours. I love how cinema can shift your perspective entirely. From Tamil classics to international arthouse, every film is a new lens on the human experience.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="reveal">
+    <p class="sec-label">04 — Achievements</p>
+    <h2 class="sec-title">Milestones I'm <em>proud of</em></h2>
+  </div>
+  <div class="ach-grid">
+    <div class="ach-card reveal">
+      <div class="ach-icon">🏅</div>
+      <div class="ach-yr">2022</div>
+      <div class="ach-name">HSC with 90% — Biology Science</div>
+      <div class="ach-desc">Secured an outstanding 90% in the Higher Secondary Certificate from Government Model Boys HSS Attingal — a result that opened the doors to my statistical and data science journey.</div>
+    </div>
+    <div class="ach-card reveal">
+      <div class="ach-icon">🎓</div>
+      <div class="ach-yr">2025</div>
+      <div class="ach-name">Admitted to IIITM-K (Kerala University of Digital Sciences)</div>
+      <div class="ach-desc">Selected for the prestigious M.Sc. Data Analytics &amp; Computational Science programme at one of India's most innovative technology universities — a highly competitive national-level admission.</div>
+    </div>
+    <div class="ach-card reveal">
+      <div class="ach-icon">📊</div>
+      <div class="ach-yr">2022 – 2025</div>
+      <div class="ach-name">B.Sc. Statistics — University of Kerala</div>
+      <div class="ach-desc">Successfully completed a rigorous three-year undergraduate programme in Statistics at Government College Kariavattom, mastering R, SPSS, and advanced statistical methods.</div>
+    </div>
+    <div class="ach-card reveal">
+      <div class="ach-icon">🌐</div>
+      <div class="ach-yr">Ongoing</div>
+      <div class="ach-name">Self-Taught Frontend Developer</div>
+      <div class="ach-desc">Reached an intermediate level in front-end development through self-directed learning — building interactive, responsive web experiences alongside a strong statistics and data science background.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATES -->
+<section id="certificates">
+  <div class="reveal">
+    <p class="sec-label">05 — Certificates</p>
+    <h2 class="sec-title">Always <em>learning</em></h2>
+  </div>
+  <div class="cert-grid">
+    <div class="cert-card reveal">
+      <div class="cert-stripe"></div>
+      <div class="cert-logo">🐳</div>
+      <div class="cert-issuer">IBM · Coursera</div>
+      <div class="cert-name">Introduction to Containers with Docker, Kubernetes &amp; OpenShift</div>
+      <div class="cert-src">Authorized by IBM, offered through Coursera</div>
+      <div class="cert-id">Issued to: Umaparvathy C S</div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-stripe"></div>
+      <div class="cert-logo">🔗</div>
+      <div class="cert-issuer">LinkedIn Learning</div>
+      <div class="cert-name">Learning Git and GitHub</div>
+      <div class="cert-src">Completed via LinkedIn Learning</div>
+      <div class="cert-id">Issued to: Umaparvathy C S</div>
+    </div>
+  </div>
+  <p style="margin-top:2.5rem; font-family:'DM Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);">✦ More certificates being earned — check back soon</p>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="reveal">
+    <p class="sec-label">Say Hello</p>
+    <h2 class="sec-title">Let's connect &amp; <em>collaborate</em></h2>
+    <p class="contact-sub">Open to academic collaborations, data projects, and conversations about statistics, ML, and design. Always happy to connect!</p>
+    <a href="mailto:umaparvathy@example.com" class="contact-email">umaparvathy@example.com</a>
+    <div class="socials">
+      <a href="#" class="soc">GitHub</a>
+      <a href="#" class="soc">LinkedIn</a>
+      <a href="#" class="soc">Instagram</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Umaparvathy C S — Thiruvananthapuram, Kerala</p>
+  <p>Built with care &amp; curiosity</p>
+</footer>
+
+<script>
+/* Cursor */
+const dot=document.getElementById('cur-dot'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function tick(){
+  dot.style.left=mx+'px';dot.style.top=my+'px';
+  rx+=(mx-rx)*.11;ry+=(my-ry)*.11;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(tick);
+})();
+document.querySelectorAll('a,button,.hob,.ach-card,.cert-card,.pill,.skill-tag').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
+
+/* Wave Canvas */
+const canvas=document.getElementById('wave-canvas'),ctx=canvas.getContext('2d');
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+resize();window.addEventListener('resize',resize);
+const waves=[
+  {y:.55,amp:40,freq:.011,speed:.011,phase:0,alpha:.16},
+  {y:.60,amp:28,freq:.017,speed:.017,phase:1.5,alpha:.11},
+  {y:.66,amp:20,freq:.009,speed:.007,phase:3.1,alpha:.08},
+];
+(function drawW(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  waves.forEach(w=>{
+    w.phase+=w.speed;
+    ctx.beginPath();ctx.moveTo(0,canvas.height);
+    for(let x=0;x<=canvas.width;x+=4){
+      const y=canvas.height*w.y+Math.sin(x*w.freq+w.phase)*w.amp+Math.sin(x*w.freq*1.6+w.phase*1.2)*w.amp*.4;
+      ctx.lineTo(x,y);
+    }
+    ctx.lineTo(canvas.width,canvas.height);ctx.closePath();
+    ctx.fillStyle=`rgba(74,144,196,${w.alpha})`;ctx.fill();
+  });
+  requestAnimationFrame(drawW);
+})();
+
+/* Scroll Reveal */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
+},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4)*.09+'s';io.observe(el);});
+</script>
+</body>
+</html>
